@@ -7,6 +7,7 @@ import (
 	"errors"
 	"io"
 	"log"
+	"math/rand"
 	"net/http"
 	"sync"
 	"sync/atomic"
@@ -16,24 +17,22 @@ import (
 var (
 	once = &sync.Once{}
 
+	done = make(chan struct{}, 0)
+
 	counter int64 = 0
 )
 
-type RespBody struct {
-	Code    int64  `json:"code"`
-	Message string `json:"message"`
-}
-
-func Run() {
+func Run(file string) {
 	once.Do(func() {
-		conf = Init()
+		conf = Init(file)
 	})
 
 	wait, end, err := await()
 	if err != nil {
 		log.Fatal(err)
 	}
-	time.Sleep(time.Duration(wait))
+	log.Printf("距开始盖楼需等待：%d 秒", wait)
+	time.Sleep(time.Duration(wait) * time.Second)
 
 	ctx := context.Background()
 	ticker := time.NewTicker(time.Duration(conf.TickerDuration) * time.Millisecond)
@@ -46,14 +45,20 @@ loop:
 				break loop
 			}
 			if atomic.LoadInt64(&counter) > conf.MaxLimit {
-				log.Printf("被限流次数超过 %d, 休眠 2 分钟 \n", conf.MaxLimit)
-				time.Sleep(2 * time.Minute)
+				log.Printf("被限流次数超过 %d 次, 休眠 10 秒 \n", conf.MaxLimit)
+				atomic.StoreInt64(&counter, 0)
+				time.Sleep(10 * time.Second)
 			}
-			Building(ctx)
+			go building(ctx)
 		case <-cleanup.C:
+			log.Println("reset counter")
 			atomic.StoreInt64(&counter, 0)
+		case <-done:
+			log.Println("done")
+			break loop
 		case <-ctx.Done():
 			log.Println("ctx done")
+			break loop
 		}
 	}
 	log.Println("👋👋～")
@@ -63,12 +68,13 @@ func await() (int64, int64, error) {
 	if conf.TimingStartTime == "" || conf.TimingEndTime == "" {
 		return 0, 0, nil
 	}
+	log.Printf("hi～ start_time: %s, end_time: %s \n", conf.TimingStartTime, conf.TimingEndTime)
 
 	now := time.Now()
-	start, _ := time.ParseInLocation(conf.TimingStartTime, "", time.Local) // TODO
-	end, _ := time.ParseInLocation(conf.TimingEndTime, "", time.Local)     // TODO
+	start, _ := time.ParseInLocation("2006-01-02 15:04:05", conf.TimingStartTime, time.Local)
+	end, _ := time.ParseInLocation("2006-01-02 15:04:05", conf.TimingEndTime, time.Local)
 	if start.Unix() > now.Unix() {
-		wait := now.Unix() - start.Unix()
+		wait := start.Unix() - now.Unix()
 		return wait, end.Unix(), nil
 	}
 	if end.Unix() < now.Unix() {
@@ -77,44 +83,51 @@ func await() (int64, int64, error) {
 	return 0, end.Unix(), nil
 }
 
-func Building(ctx context.Context) {
+type RespBody struct {
+	Code    int64                  `json:"code"`
+	Data    map[string]interface{} `json:"data"`
+	Message string                 `json:"message"`
+}
+
+func building(ctx context.Context) {
 	body, _ := json.Marshal(map[string]interface{}{
 		"articleBusinessId": conf.ArticleBusinessID,
 		"atUserList":        make([]interface{}, 0, 0),
-		"content":           "1111", // 留言
+		"content":           rand.Int31n(10), // 留言
 	})
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, conf.URL, bytes.NewReader(body))
 	if err != nil {
 		log.Printf("[http request] err: %s \n", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("X-CSRF", "") // TODO: 需要设置
-	req.Header.Set("Cookie", "") // TODO: 需要设置
+	req.Header.Set("X-CSRF", conf.XCSRF)
+	req.Header.Set("Cookie", conf.Cookie)
 
-	resp, err := new(http.Client).Do(req)
+	response, err := new(http.Client).Do(req)
 	if err != nil {
 		log.Printf("[client do] err: %s \n", err)
 	}
-	respBody := new(RespBody)
-	ioBody, _ := io.ReadAll(resp.Body)
-	err = json.Unmarshal(ioBody, respBody)
+	resp := new(RespBody)
+	ioBody, _ := io.ReadAll(response.Body)
+	err = json.Unmarshal(ioBody, resp)
 	if err != nil {
 		log.Printf("[resp json unmarshal] err: %s \n", err)
 		return
 	}
-	if respBody.Code != 0 {
-		log.Printf("[resp code] message: %s \n", respBody.Message)
-		switch respBody.Code {
-		// TODO
-		case 5000:
+	if resp.Code != 0 {
+		log.Printf("[resp err] code: %d; message: %s \n", resp.Code, resp.Message)
+		switch resp.Code {
+		case 90005: // 太快啦~不要刷啦~
 			atomic.AddInt64(&counter, 1)
 		}
 		return
 	}
-
-	// TODO: 校验是否终止服务
-	if conf.TargetFloor == 1000 {
-
+	// 盖中目标楼层，终止盖楼
+	floorNum, ok := resp.Data["floorNum"]
+	if ok {
+		if conf.TargetFloor != 0 && conf.TargetFloor == floorNum.(float64) {
+			done <- struct{}{}
+			log.Printf("恭喜🎉🎉🎉～ %.0f层盖中啦～ \n", conf.TargetFloor)
+		}
 	}
-
 }
