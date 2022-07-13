@@ -16,7 +16,7 @@ var (
 	url = ""
 
 	body = map[string]interface{}{
-		"articleBusinessId": "e5339d97ec0e48ec889af1944dd7268e", // TODO: 设置参数
+		"articleBusinessId": "", // TODO: 设置参数
 		"atUserList":        make([]interface{}, 0, 0),
 		"content":           "1",
 	}
@@ -64,8 +64,8 @@ func Building(ctx context.Context) {
 		log.Printf("[http request] err: %s \n", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("X-CSRF", "csrf-0.5954696332336054")                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   // TODO: 需要设置
-	req.Header.Set("Cookie", "buvid3=93EBC383-69C2-9756-1E2C-A1C7FE25433924396infoc; b_nut=1643166524; buvid_fp=e5d0d3c8608036dcdd41f3b32f344f69; buvid4=3AA2FBCC-39C8-73B6-EB62-663C0A70206A73921-022012016-C34HN9S73zrywuG4/UVeSw%3D%3D; mng-go=11ca7ef1fd5a8071d47c837aa36a10c66fae2f2a2adefca684cba067e0cf1543; _AJSESSIONID=67bc6687563f365ba2a9dc0d92fe9f09; username=tangjingyu; b_lsid=63C525C7_181D312239D; b_timer=%7B%22ffp%22%3A%7B%22446.0.fp.risk_93EBC383%22%3A%22181D3122472%22%2C%22333.1019.fp.risk_93EBC383%22%3A%22181D314BCDD%22%7D%7D; SecurityProxySessionID=V1_ZTRhMGZmMDctY2Q5OC0zOTQ0LWI0ZmUtZDljYWYzODNlODBj") // TODO: 需要设置
+	req.Header.Set("X-CSRF", "") // TODO: 需要设置
+	req.Header.Set("Cookie", "") // TODO: 需要设置
 
 	resp, err := new(http.Client).Do(req)
 	if err != nil {
