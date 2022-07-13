@@ -13,15 +13,10 @@ import (
 	"time"
 )
 
-const (
-	tickerDuration = 2 * time.Second
-	maxLimit       = 3
-)
-
 var (
-	counter int64 = 0
-
 	once = &sync.Once{}
+
+	counter int64 = 0
 )
 
 type RespBody struct {
@@ -41,7 +36,7 @@ func Run() {
 	time.Sleep(time.Duration(wait))
 
 	ctx := context.Background()
-	ticker := time.NewTicker(tickerDuration)
+	ticker := time.NewTicker(time.Duration(conf.TickerDuration) * time.Millisecond)
 	cleanup := time.NewTicker(10 * time.Second)
 loop:
 	for {
@@ -50,8 +45,8 @@ loop:
 			if end != 0 && end < time.Now().Unix() {
 				break loop
 			}
-			if atomic.LoadInt64(&counter) > maxLimit {
-				log.Printf("被限流次数超过 %d, 休眠 2 分钟 \n", maxLimit)
+			if atomic.LoadInt64(&counter) > conf.MaxLimit {
+				log.Printf("被限流次数超过 %d, 休眠 2 分钟 \n", conf.MaxLimit)
 				time.Sleep(2 * time.Minute)
 			}
 			Building(ctx)
@@ -118,7 +113,7 @@ func Building(ctx context.Context) {
 	}
 
 	// TODO: 校验是否终止服务
-	if conf.TargetFloor == 0 {
+	if conf.TargetFloor == 1000 {
 
 	}
 

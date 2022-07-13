@@ -1,6 +1,8 @@
 package main
 
-import "github.com/demoManito/bilibiliscript/building"
+import (
+	"github.com/demoManito/bilibiliscript/building"
+)
 
 func main() {
 	building.Run()

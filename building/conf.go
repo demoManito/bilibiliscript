@@ -10,6 +10,8 @@ import (
 var conf *Conf
 
 type Conf struct {
+	MaxLimit          int64  `yaml:"max_limit"`       // 接口提示盖楼频繁最大限制次数，达到限制将休眠 x 秒后请求
+	TickerDuration    int64  `yaml:"ticker_duration"` // 间隔多少毫秒轮询一次
 	URL               string `yaml:"url"`
 	ArticleBusinessID string `yaml:"article_business_id"`
 	XCSRF             string `yaml:"xcsrf"`

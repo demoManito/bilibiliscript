@@ -1,7 +1,9 @@
-url: ''
-article_business_id: ''
-xcsrf: ''
-cookie: ''
-target_floor: 0 # 可选
-timing_start_time: '2022-07-22 22:00:00' # 可选
-timing_end_time: '2022-07-22 23:00:00' # 可选
+max_limit: 3 # 接口提示盖楼频繁最大限制次数，达到限制将休眠 x 秒后请求, 默认最大限制 10s 3次
+ticker_duration: 1000 # 单位毫秒, 默认 1 秒请求一次
+url: '' # 盖楼 URL
+article_business_id: '' # payload 中获取
+xcsrf: '' # headers 中获取
+cookie: '' # headers 中获取
+target_floor: 0 # 目标楼层, 可选, 不填默认一直盖
+timing_start_time: '' # 盖楼开始时间, 可选 '2022-07-22 22:00:00', 不填默认无定时
+timing_end_time: '' # 盖楼结束时间, 可选 '2022-07-22 23:00:00', 不填默认无定时
