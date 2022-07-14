@@ -1,7 +1,7 @@
 ## 同事吧盖楼
 
 - 使用注意 ⚠️：
-  - 使用的时候收敛一点，别太猖狂
+  - 使用的时候收敛一点，别太激进～
   - 设置 `X-CSRF`、`Cookie` 参数从请求头中获取
   - 设置 `Payload` 参数从中获取请求体
   - 以上参数均在 `config.yml` 中设置
@@ -24,7 +24,7 @@
   
 - 如何启动：
   - run test, 文件: `run_test.go`
-  - 外部调用：（`config.yml` 填写自己工程目录下文件路径的即可）
+  - 外部调用：(`config.yml` 填写自己工程目录下文件路径的即可)
   ```go
     // 单帖盖楼
     building.New("./config.example.yml").Run()
