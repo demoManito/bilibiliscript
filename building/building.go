@@ -126,12 +126,22 @@ func (b *Building) building(ctx context.Context) {
 	}
 	atomic.AddInt64(&b.floorNum, 1)
 	// 盖中目标楼层，终止盖楼
-	if floorNum, ok := resp.Data["floorNum"]; ok {
-		if b.Conf.TargetFloor != 0 && b.Conf.TargetFloor == floorNum.(float64) {
-			b.done <- struct{}{}
-			log.Printf("恭喜🎉🎉🎉～ %.0f层盖中啦～ \n", b.Conf.TargetFloor)
+	if floorNum, ok := resp.Data["floorNum"]; ok && b.includeFloor(floorNum.(float64)) {
+		b.done <- struct{}{}
+		log.Printf("恭喜🎉🎉🎉～ %.0f层盖中啦～ \n", b.Conf.TargetFloor)
+	}
+}
+
+func (b *Building) includeFloor(floorNum float64) bool {
+	if len(b.Conf.TargetFloor) == 0 {
+		return false
+	}
+	for _, tf := range b.Conf.TargetFloor {
+		if tf == floorNum {
+			return true
 		}
 	}
+	return false
 }
 
 // RunBuilds 同时盖多个贴的楼
