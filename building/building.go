@@ -33,11 +33,8 @@ func New(fileName string) *Building {
 }
 
 func (b *Building) Run() {
-	wait, end, err := b.await()
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Printf("距开始盖楼需等待：%d 秒", wait)
+	wait, end := b.await()
+	log.Printf("距开始盖楼需等待：%d 秒 \n", wait)
 	time.Sleep(time.Duration(wait) * time.Second)
 
 	ticker := time.NewTicker(time.Duration(b.Conf.TickerDuration) * time.Millisecond)
@@ -68,9 +65,9 @@ loop:
 	log.Printf("盖了 %d 楼, 👋👋～", atomic.LoadInt64(&b.floorNum))
 }
 
-func (b *Building) await() (int64, int64, error) {
+func (b *Building) await() (int64, int64) {
 	if b.Conf.TimingStartTime == "" || b.Conf.TimingEndTime == "" {
-		return 0, 0, nil
+		return 0, 0
 	}
 	log.Printf("hi～ start_time: %s, end_time: %s \n", b.Conf.TimingStartTime, b.Conf.TimingEndTime)
 
@@ -79,12 +76,12 @@ func (b *Building) await() (int64, int64, error) {
 	end, _ := time.ParseInLocation("2006-01-02 15:04:05", b.Conf.TimingEndTime, time.Local)
 	if start.Unix() > now.Unix() {
 		wait := start.Unix() - now.Unix()
-		return wait, end.Unix(), nil
+		return wait, end.Unix()
 	}
 	if end.Unix() < now.Unix() {
-		return 0, 0, errors.New("已结束")
+		log.Fatal(errors.New("已结束"))
 	}
-	return 0, end.Unix(), nil
+	return 0, end.Unix()
 }
 
 func (b *Building) building(ctx context.Context) {
