@@ -23,7 +23,7 @@
   ```
   
 - 如何启动：
-  - run test, 文件: `run_test.go`
+  - 直接执行单测：`run_test.go`
   - 外部调用：(`config.yml` 填写自己工程目录下文件路径的即可)
   ```go
     // 单帖盖楼
