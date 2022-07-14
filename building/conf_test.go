@@ -7,4 +7,5 @@ func TestInit(t *testing.T) {
 	t.Log(conf.MaxLimit)
 	t.Log(conf.TickerDuration)
 	t.Log(conf.TargetFloor)
+	t.Log(conf.TargetFloorRule)
 }

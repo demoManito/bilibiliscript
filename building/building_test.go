@@ -1,19 +1,22 @@
-package building_test
+package building
 
-import (
-	"testing"
+import "testing"
 
-	"github.com/demoManito/bilibiliscript/building"
-)
-
-func TestRun(t *testing.T) {
-	building.New("./config.example.yml").Run()
-}
-
-func TestRunBuilds(t *testing.T) {
-	builds := []*building.Building{
-		building.New("./config.example1.yml"), // NOTICE: config 不存在
-		building.New("./config.example2.yml"), // NOTICE: config 不存在
+func TestIncludeFloor(t *testing.T) {
+	b := &Building{
+		Conf: &Conf{
+			TargetFloorRule: map[string]int{"rule": 1, "target": 3},
+		},
 	}
-	building.RunBuilds(builds)
+	t.Log(b.includeFloor(1)) // false
+	t.Log(b.includeFloor(3)) // true
+	t.Log(b.includeFloor(4)) // false
+
+	b = &Building{
+		Conf: &Conf{
+			TargetFloor: []float64{1, 2},
+		},
+	}
+	t.Log(b.includeFloor(1)) // true
+	t.Log(b.includeFloor(3)) // false
 }

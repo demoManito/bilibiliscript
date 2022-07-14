@@ -133,12 +133,19 @@ func (b *Building) building(ctx context.Context) {
 }
 
 func (b *Building) includeFloor(floorNum float64) bool {
-	if len(b.Conf.TargetFloor) == 0 {
-		return false
+	if len(b.Conf.TargetFloor) != 0 {
+		for _, tf := range b.Conf.TargetFloor {
+			if tf == floorNum {
+				return true
+			}
+		}
 	}
-	for _, tf := range b.Conf.TargetFloor {
-		if tf == floorNum {
-			return true
+	if len(b.Conf.TargetFloorRule) != 0 {
+		switch b.Conf.TargetFloorRule["rule"] {
+		case targetFloorRuleMOD:
+			if int(floorNum)%b.Conf.TargetFloorRule["target"] == 0 {
+				return true
+			}
 		}
 	}
 	return false
