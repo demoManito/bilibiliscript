@@ -36,58 +36,56 @@ func New(fileName string) *Building {
 }
 
 func (b *Building) Run() {
-	wait, end := b.await()
-	log.Printf("距开始盖楼需等待：%d 秒 \n", wait)
-	time.Sleep(time.Duration(wait) * time.Second)
+	b.waiter()
 
 	ticker := time.NewTicker(time.Duration(b.Conf.TickerDuration) * time.Millisecond)
-	cleanup := time.NewTicker(10 * time.Second)
+	cleanup := time.NewTicker(5 * time.Second)
 loop:
 	for {
 		select {
 		case <-ticker.C:
-			if end != 0 && end < time.Now().Unix() {
-				break loop
-			}
-			if b.Conf.TickerDuration >= 1000 && atomic.LoadInt64(&b.counter) > b.Conf.MaxLimit {
-				log.Printf("被限流次数超过 %d 次, 休眠 11 秒 \n", b.Conf.MaxLimit)
-				atomic.StoreInt64(&b.counter, 0)
-				time.Sleep(11 * time.Second)
-			}
 			go b.building(b.ctx)
 		case <-cleanup.C:
-			atomic.StoreInt64(&b.counter, 0)
+			b.cleanup()
 		case <-b.done:
-			log.Println("done")
+			b.clear()
 			break loop
 		case <-b.ctx.Done():
-			log.Println("ctx done")
+			b.clear()
 			break loop
 		}
 	}
-	log.Printf("盖了 %d 楼, 👋👋～", atomic.LoadInt64(&b.floorNum))
+	log.Printf("成功盖了 %d 层 👋👋～", atomic.LoadInt64(&b.floorNum))
 }
 
-func (b *Building) await() (int64, int64) {
-	if b.Conf.TimingStartTime == "" || b.Conf.TimingEndTime == "" {
-		return 0, 0
+func (b *Building) waiter() {
+	switch {
+	case b.Conf.Timing.Enable:
+		b.timing()
 	}
-	log.Printf("hi～ start_time: %s, end_time: %s \n", b.Conf.TimingStartTime, b.Conf.TimingEndTime)
 
+	log.Println("🏠 开始盖楼啦～")
+}
+
+func (b *Building) timing() {
 	now := time.Now()
-	start, _ := time.ParseInLocation("2006-01-02 15:04:05", b.Conf.TimingStartTime, time.Local)
-	end, _ := time.ParseInLocation("2006-01-02 15:04:05", b.Conf.TimingEndTime, time.Local)
-	if start.Unix() > now.Unix() {
-		wait := start.Unix() - now.Unix()
-		return wait, end.Unix()
+	if b.Conf.Timing.StartTime != "" {
+		start, _ := time.ParseInLocation("2006-01-02 15:04:05", b.Conf.Timing.StartTime, time.Local)
+		if start.Unix() > now.Unix() {
+			wait := start.Unix() - now.Unix()
+			log.Printf("距开始盖楼需等待：%d 秒 \n", wait)
+			<-time.NewTimer(time.Duration(wait) * time.Second).C
+		}
 	}
-	if end.Unix() < now.Unix() {
-		log.Fatal("定时任务已结束")
-	}
-	return 0, end.Unix()
 }
 
 func (b *Building) building(ctx context.Context) {
+	if b.Conf.TickerDuration >= 1000 && atomic.LoadInt64(&b.counter) > b.Conf.MaxLimit {
+		log.Printf("被限流次数超过 %d 次, 休眠 11 秒 \n", b.Conf.MaxLimit)
+		atomic.StoreInt64(&b.counter, 0)
+		<-time.NewTimer(9 * time.Second).C
+	}
+
 	body, _ := json.Marshal(map[string]interface{}{
 		"articleBusinessId": b.Conf.ArticleBusinessID,
 		"atUserList":        make([]interface{}, 0, 0),
@@ -152,6 +150,26 @@ func (b *Building) includeFloor(floorNum float64) bool {
 		}
 	}
 	return false
+}
+
+func (b *Building) cleanup() {
+	atomic.StoreInt64(&b.counter, 0)
+
+	// 扫描定时任务结束时间
+	if b.Conf.Timing.Enable && b.Conf.Timing.EndTime != "" {
+		go func() {
+			end, _ := time.ParseInLocation("2006-01-02 15:04:05", b.Conf.Timing.EndTime, time.Local)
+			if end.Unix() <= time.Now().Unix() {
+				log.Println("⏰ 盖楼结束啦！")
+				b.done <- struct{}{}
+			}
+		}()
+	}
+}
+
+func (b *Building) clear() {
+	close(b.done)
+	log.Println("下次再见～ 🐛🐛🐛")
 }
 
 // RunBuilds 同时盖多个贴的楼

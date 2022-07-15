@@ -8,12 +8,16 @@
 
 
 - 功能说明：
-  - 支持设置目标楼层：设置参数 `target_floor`，盖中目标楼层自动终止盖楼
+  - 支持设置目标楼层：
+    - 设置 `target_floor` 盖中目标楼层自动终止盖楼
     - 参数为数组，支持设置多个楼层
-  - 支持规则匹配目标楼层：设置参数 `target_floor_rule`，填写规则(`rule`) 和匹配目标数字(`target`) 即可
-    - [rule: 1, target: 2]: 表示匹配 2 的倍数
-    - [rule: 2, target: 2]: 表示匹配楼层数中包含 2 的楼层
-  - 支持设置定时任务：设置参数 `timing_start_time`、`timing_end_time`，可定时开始定时结束
+  - 支持规则匹配目标楼层
+    - 设置 `target_floor_rule`，填写规则(`rule`) 和匹配目标数字(`target`) 即可
+      1. 规则1: [rule: 1, target: 2] 表示匹配 2 的倍数
+      2. 规则2: [rule: 2, target: 2] 表示匹配楼层数中包含 2 的楼层
+  - 支持设置定时任务：
+    - 需将 `timing.enable` 设置为 true 表示开启，默认为 false 表示关闭
+    - 设置 `timing.start_time`、`timing.end_time` 可定时开始和定时结束（可单独设置 `start_time` 或 `end_time` 两者无关联关系）
     - 日期格式：2022-07-22 23:00:00
   - 支持多贴同时盖楼：
   ```go
