@@ -4,14 +4,17 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
 	"io"
 	"log"
 	"math/rand"
 	"net/http"
+	"strconv"
+	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
+
+	"github.com/demoManito/bilibiliscript/utils"
 )
 
 type Building struct {
@@ -79,7 +82,7 @@ func (b *Building) await() (int64, int64) {
 		return wait, end.Unix()
 	}
 	if end.Unix() < now.Unix() {
-		log.Fatal(errors.New("已结束"))
+		log.Fatal("定时任务已结束")
 	}
 	return 0, end.Unix()
 }
@@ -92,25 +95,23 @@ func (b *Building) building(ctx context.Context) {
 	})
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, b.Conf.URL, bytes.NewReader(body))
 	if err != nil {
-		log.Printf("[http request] err: %s \n", err)
+		log.Printf("[request err] err: %s \n", err)
+		return
 	}
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("X-CSRF", b.Conf.XCSRF)
 	req.Header.Set("Cookie", b.Conf.Cookie)
 
-	var resp struct {
-		Code    int64                  `json:"code"`
-		Data    map[string]interface{} `json:"data"`
-		Message string                 `json:"message"`
-	}
+	resp := new(utils.Resp)
 	response, err := new(http.Client).Do(req)
 	if err != nil {
-		log.Printf("[client do] err: %s \n", err)
+		log.Printf("[http err] client do err: %s \n", err)
+		return
 	}
 	ioBody, _ := io.ReadAll(response.Body)
 	err = json.Unmarshal(ioBody, &resp)
 	if err != nil {
-		log.Printf("[resp json unmarshal] err: %s \n", err)
+		log.Printf("[unmarshal err] resp json unmarshal err: %s \n", err)
 		return
 	}
 	if resp.Code != 0 {
@@ -138,9 +139,14 @@ func (b *Building) includeFloor(floorNum float64) bool {
 		}
 	}
 	if len(b.Conf.TargetFloorRule) != 0 {
+		target := b.Conf.TargetFloorRule["target"]
 		switch b.Conf.TargetFloorRule["rule"] {
 		case targetFloorRuleMOD:
-			if int(floorNum)%b.Conf.TargetFloorRule["target"] == 0 {
+			if int(floorNum)%target == 0 {
+				return true
+			}
+		case targetFloorRuleInclude:
+			if strings.Contains(strconv.FormatFloat(floorNum, 'f', 2, 64), strconv.FormatInt(int64(target), 10)) {
 				return true
 			}
 		}

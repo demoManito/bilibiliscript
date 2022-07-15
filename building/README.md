@@ -9,8 +9,12 @@
 
 - 功能说明：
   - 支持设置目标楼层：设置参数 `target_floor`，盖中目标楼层自动终止盖楼
+    - 参数为数组，支持设置多个楼层
   - 支持规则匹配目标楼层：设置参数 `target_floor_rule`，填写规则(`rule`) 和匹配目标数字(`target`) 即可
+    - [rule: 1, target: 2]: 表示匹配 2 的倍数
+    - [rule: 2, target: 2]: 表示匹配楼层数中包含 2 的楼层
   - 支持设置定时任务：设置参数 `timing_start_time`、`timing_end_time`，可定时开始定时结束
+    - 日期格式：2022-07-22 23:00:00
   - 支持多贴同时盖楼：
   ```go
     func example() {
@@ -24,7 +28,7 @@
   
 - 如何启动：
   - 直接执行单测：`run_test.go`
-  - 外部调用：(`config.yml` 填写自己工程目录下文件路径的即可)
+  - 外部调用：`config.yml` 填写自己工程目录下文件路径的即可
   ```go
     // 单帖盖楼
     building.New("./config.example.yml").Run()
