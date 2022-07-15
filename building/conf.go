@@ -8,7 +8,8 @@ import (
 )
 
 const (
-	targetFloorRuleMOD = iota + 1 // 目标数的倍数
+	targetFloorRuleMOD     = iota + 1 // 目标数的倍数
+	targetFloorRuleInclude            // 包含某个数
 )
 
 type Conf struct {

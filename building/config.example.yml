@@ -1,6 +1,6 @@
 # 默认参数
 max_limit: 3 # 接口提示盖楼频繁最大限制次数，达到限制将休眠 x 秒后请求, 默认最大限制 10s 3次
-ticker_duration: 1000 # 单位毫秒, 默认 1 秒请求一次
+ticker_duration: 1000 # 单位毫秒, 默认 1 秒请求一次, 小于 1000 进入极速模式适用于短时间抢楼
 url: '' # 盖楼 URL
 # 必选参数
 article_business_id: '' # payload 中获取
@@ -9,7 +9,7 @@ cookie: '' # headers 中获取
 # 可选参数
 target_floor: [] # 目标楼层, 不填默认一直盖
 target_floor_rule: # 带规则匹配目标楼层
-#  rule: 1 # 目标规则, 1: 指定数的倍数
+#  rule: 1 # 目标规则, 1: 指定数的倍数; 2: 包含 target 字符
 #  target: 2 # 目标数字, 如 rule 指定 1, 表示所有 2 的倍数都选座目标楼层
 timing_start_time: '' # 盖楼开始时间 '2022-07-22 22:00:00', 不填默认无定时
 timing_end_time: '' # 盖楼结束时间 '2022-07-22 23:00:00', 不填默认无定时

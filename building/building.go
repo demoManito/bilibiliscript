@@ -9,6 +9,8 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
+	"strconv"
+	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -93,6 +95,7 @@ func (b *Building) building(ctx context.Context) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, b.Conf.URL, bytes.NewReader(body))
 	if err != nil {
 		log.Printf("[http request] err: %s \n", err)
+		return
 	}
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("X-CSRF", b.Conf.XCSRF)
@@ -106,6 +109,7 @@ func (b *Building) building(ctx context.Context) {
 	response, err := new(http.Client).Do(req)
 	if err != nil {
 		log.Printf("[client do] err: %s \n", err)
+		return
 	}
 	ioBody, _ := io.ReadAll(response.Body)
 	err = json.Unmarshal(ioBody, &resp)
@@ -138,9 +142,14 @@ func (b *Building) includeFloor(floorNum float64) bool {
 		}
 	}
 	if len(b.Conf.TargetFloorRule) != 0 {
+		target := b.Conf.TargetFloorRule["target"]
 		switch b.Conf.TargetFloorRule["rule"] {
 		case targetFloorRuleMOD:
-			if int(floorNum)%b.Conf.TargetFloorRule["target"] == 0 {
+			if int(floorNum)%target == 0 {
+				return true
+			}
+		case targetFloorRuleInclude:
+			if strings.Contains(strconv.FormatFloat(floorNum, 'f', 2, 64), strconv.FormatInt(int64(target), 10)) {
 				return true
 			}
 		}
