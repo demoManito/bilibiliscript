@@ -63,8 +63,8 @@ func (f *Floor) Report() {
 		if info != nil {
 			break
 		}
-		if f.max >= 3 {
-			log.Println("查询次数超过上限 ⚠️")
+		if f.max >= 2 {
+			log.Println("未查询到相关数据 ⚠️")
 			return
 		}
 	}
