@@ -17,10 +17,15 @@ trigger_building: # 盖楼触发器
   enable: false # 是否开启触发器, 默认关闭
   url: '' # 评论列表接口
   num: 0 # 触发盖楼的楼层数, MAX(楼层数) >= n 时开始盖楼
-target_floor:
+target_floor: # 盖中指定楼层
   enable: false
   nums: [] # 目标楼层, 默认为空
-target_floor_rule: # 带规则匹配目标楼层
+target_floor_rule: # 盖中规则匹配上的目标楼层
   enable: false
   rule: 1 # 目标规则, 1: 指定数的倍数; 2: 包含 target 字符
   target: 2 # 目标数字, 如 rule 指定 1, 表示所有 2 的倍数都选座目标楼层
+target_floor_scope: # 盖中目标楼层返回
+  enable: false
+  url: '' # 评论列表接口
+  min: 0
+  max: 0

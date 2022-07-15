@@ -10,8 +10,9 @@ import (
 	"github.com/demoManito/bilibiliscript/utils"
 )
 
-func (b *Building) triggerBuilding() bool {
-	req, err := http.NewRequest(http.MethodGet, b.parseURL(), nil)
+// isTriggerBuilding 是否触发盖楼
+func (b *Building) isTriggerBuilding(url string, floorNum int64) bool {
+	req, err := http.NewRequest(http.MethodGet, b.parseURL(url), nil)
 	if err != nil {
 		log.Printf("[request err] err: %s", err)
 		return false
@@ -50,14 +51,14 @@ func (b *Building) triggerBuilding() bool {
 		return false
 	}
 
-	if b.Conf.TriggerBuilding.Num <= floors[0].FloorNum {
+	if floorNum <= floors[0].FloorNum {
 		return true
 	}
 	return false
 }
 
-func (b *Building) parseURL() string {
-	up, err := url.Parse(b.Conf.TriggerBuilding.URL)
+func (b *Building) parseURL(u string) string {
+	up, err := url.Parse(u)
 	if err != nil {
 		log.Fatal(err)
 	}

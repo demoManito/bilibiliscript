@@ -41,15 +41,24 @@ type TargetFloorRule struct {
 	Target int  `yaml:"target"`
 }
 
+// TargetFloorScope 盖区间内的楼
+type TargetFloorScope struct {
+	Enable bool   `yaml:"enable"`
+	URL    string `yaml:"url"`
+	MIN    int64  `yaml:"min"`
+	MAX    int64  `yaml:"max"`
+}
+
 type Conf struct {
 	utils.ScriptConfig `yaml:",inline"`
 
-	MaxLimit        int64            `yaml:"max_limit"`         // 接口提示盖楼频繁最大限制次数，达到限制将休眠 x 秒后请求
-	TickerDuration  int64            `yaml:"ticker_duration"`   // 间隔多少毫秒轮询一次
-	Timing          *Timing          `yaml:"timing"`            // 定时器
-	TriggerBuilding *TriggerFloor    `yaml:"trigger_building"`  // 楼层触发器
-	TargetFloor     *TargetFloor     `yaml:"target_floor"`      // 目标楼层, 盖中此楼将退出盖楼
-	TargetFloorRule *TargetFloorRule `yaml:"target_floor_rule"` // 带规则匹配目标楼层
+	MaxLimit         int64             `yaml:"max_limit"`          // 接口提示盖楼频繁最大限制次数，达到限制将休眠 x 秒后请求
+	TickerDuration   int64             `yaml:"ticker_duration"`    // 间隔多少毫秒轮询一次
+	Timing           *Timing           `yaml:"timing"`             // 定时器
+	TriggerBuilding  *TriggerFloor     `yaml:"trigger_building"`   // 楼层触发器
+	TargetFloor      *TargetFloor      `yaml:"target_floor"`       // 盖中指定目标楼层
+	TargetFloorRule  *TargetFloorRule  `yaml:"target_floor_rule"`  // 盖中规则匹配上的目标楼层
+	TargetFloorScope *TargetFloorScope `yaml:"target_floor_scope"` // 盖中目标楼层返回
 }
 
 func Init(filename string) *Conf {

@@ -61,7 +61,9 @@ loop:
 func (b *Building) waiter() {
 	switch {
 	case b.Conf.TriggerBuilding.Enable:
-		b.triggerFloor()
+		b.triggerFloor(b.Conf.TriggerBuilding.URL, b.Conf.TriggerBuilding.Num)
+	case b.Conf.TargetFloorScope.Enable:
+		b.triggerFloor(b.Conf.TargetFloorScope.URL, b.Conf.TargetFloorScope.MIN)
 	case b.Conf.Timing.Enable:
 		b.timing()
 	}
@@ -69,13 +71,13 @@ func (b *Building) waiter() {
 	log.Println("🏠 开始盖楼啦～")
 }
 
-func (b *Building) triggerFloor() {
-	log.Printf("正在等待楼层 %d 生成...", b.Conf.TriggerBuilding.Num)
+func (b *Building) triggerFloor(url string, num int64) {
+	log.Printf("正在等待楼层 %d 生成...", num)
 	ticker := time.NewTicker(time.Second)
 	for {
 		select {
 		case <-ticker.C:
-			if b.triggerBuilding() {
+			if b.isTriggerBuilding(url, num) {
 				ticker.Stop()
 				return
 			}
@@ -140,7 +142,7 @@ func (b *Building) building(ctx context.Context) {
 	// 盖中目标楼层，终止盖楼
 	if floorNum, ok := resp.Data["floorNum"]; ok && b.includeFloor(floorNum.(float64)) {
 		b.done <- struct{}{}
-		log.Printf("恭喜🎉🎉🎉～ %.0f层盖中啦～ \n", floorNum)
+		log.Printf("恭喜🎉🎉🎉 %.0f 层盖中啦～ \n", floorNum)
 	}
 }
 
@@ -163,6 +165,11 @@ func (b *Building) includeFloor(floorNum float64) bool {
 			if strings.Contains(strconv.FormatFloat(floorNum, 'f', 2, 64), strconv.FormatInt(int64(target), 10)) {
 				return true
 			}
+		}
+	}
+	if b.Conf.TargetFloorScope.Enable {
+		if int(floorNum) >= int(b.Conf.TargetFloorScope.MAX) {
+			return true
 		}
 	}
 	return false
