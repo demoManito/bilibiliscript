@@ -1,0 +1,5 @@
+floor_num: 1000 # 需要查看的楼层数据
+url: '' # 盖楼 URL
+article_business_id: '' # payload 中获取
+xcsrf: '' # headers 中获取
+cookie: '' # headers 中获取

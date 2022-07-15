@@ -14,6 +14,8 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
+
+	"github.com/demoManito/bilibiliscript/utils"
 )
 
 type Building struct {
@@ -101,11 +103,7 @@ func (b *Building) building(ctx context.Context) {
 	req.Header.Set("X-CSRF", b.Conf.XCSRF)
 	req.Header.Set("Cookie", b.Conf.Cookie)
 
-	var resp struct {
-		Code    int64                  `json:"code"`
-		Data    map[string]interface{} `json:"data"`
-		Message string                 `json:"message"`
-	}
+	resp := new(utils.Resp)
 	response, err := new(http.Client).Do(req)
 	if err != nil {
 		log.Printf("[client do] err: %s \n", err)
