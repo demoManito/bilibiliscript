@@ -140,21 +140,21 @@ func (b *Building) building(ctx context.Context) {
 	// 盖中目标楼层，终止盖楼
 	if floorNum, ok := resp.Data["floorNum"]; ok && b.includeFloor(floorNum.(float64)) {
 		b.done <- struct{}{}
-		log.Printf("恭喜🎉🎉🎉～ %.0f层盖中啦～ \n", b.Conf.TargetFloor)
+		log.Printf("恭喜🎉🎉🎉～ %.0f层盖中啦～ \n", floorNum)
 	}
 }
 
 func (b *Building) includeFloor(floorNum float64) bool {
-	if len(b.Conf.TargetFloor) != 0 {
-		for _, tf := range b.Conf.TargetFloor {
+	if b.Conf.TargetFloor.Enable {
+		for _, tf := range b.Conf.TargetFloor.Nums {
 			if tf == floorNum {
 				return true
 			}
 		}
 	}
-	if len(b.Conf.TargetFloorRule) != 0 {
-		target := b.Conf.TargetFloorRule["target"]
-		switch b.Conf.TargetFloorRule["rule"] {
+	if b.Conf.TargetFloorRule.Enable {
+		target := b.Conf.TargetFloorRule.Target
+		switch b.Conf.TargetFloorRule.Rule {
 		case targetFloorRuleMOD:
 			if int(floorNum)%target == 0 {
 				return true

@@ -1,34 +1,54 @@
 package building
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
 
 func TestIncludeFloor(t *testing.T) {
-	t.Log("model 1")
+	assert := assert.New(t)
+
+	// test target_floor_rule model 1
 	b := &Building{
 		Conf: &Conf{
-			TargetFloorRule: map[string]int{"rule": 1, "target": 3},
+			TargetFloor: &TargetFloor{},
+			TargetFloorRule: &TargetFloorRule{
+				Enable: true,
+				Rule:   1,
+				Target: 3,
+			},
 		},
 	}
-	t.Log(b.includeFloor(1)) // false
-	t.Log(b.includeFloor(3)) // true
-	t.Log(b.includeFloor(4)) // false
+	assert.False(b.includeFloor(1))
+	assert.True(b.includeFloor(3))
+	assert.False(b.includeFloor(4))
 
-	t.Log("model 2")
+	// test target_floor_rule model 2
 	b = &Building{
 		Conf: &Conf{
-			TargetFloorRule: map[string]int{"rule": 2, "target": 3},
+			TargetFloor: &TargetFloor{},
+			TargetFloorRule: &TargetFloorRule{
+				Enable: true,
+				Rule:   2,
+				Target: 3,
+			},
 		},
 	}
-	t.Log(b.includeFloor(1111)) // false
-	t.Log(b.includeFloor(1113)) // true
-	t.Log(b.includeFloor(4131)) // true
+	assert.False(b.includeFloor(1111))
+	assert.True(b.includeFloor(1113))
+	assert.True(b.includeFloor(4131))
 
-	t.Log("model array")
+	// test target_floor
 	b = &Building{
 		Conf: &Conf{
-			TargetFloor: []float64{1, 2},
+			TargetFloor: &TargetFloor{
+				Enable: true,
+				Nums:   []float64{1, 2},
+			},
+			TargetFloorRule: &TargetFloorRule{},
 		},
 	}
-	t.Log(b.includeFloor(1)) // true
-	t.Log(b.includeFloor(3)) // false
+	assert.True(b.includeFloor(1))
+	assert.False(b.includeFloor(3))
 }

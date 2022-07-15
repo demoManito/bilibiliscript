@@ -28,15 +28,28 @@ type TriggerFloor struct {
 	Num    int64  `yaml:"num"`    // 触发开始盖楼的楼层数
 }
 
+// TargetFloor 盖中目标楼层
+type TargetFloor struct {
+	Enable bool      `yaml:"enable"`
+	Nums   []float64 `yaml:"nums"` // 目标楼层, 盖中任意一楼层将退出盖楼
+}
+
+// TargetFloorRule 带规则匹配目标楼层
+type TargetFloorRule struct {
+	Enable bool `yaml:"enable"`
+	Rule   int  `yaml:"rule"`
+	Target int  `yaml:"target"`
+}
+
 type Conf struct {
 	utils.ScriptConfig `yaml:",inline"`
 
-	MaxLimit        int64          `yaml:"max_limit"`                   // 接口提示盖楼频繁最大限制次数，达到限制将休眠 x 秒后请求
-	TickerDuration  int64          `yaml:"ticker_duration"`             // 间隔多少毫秒轮询一次
-	Timing          *Timing        `yaml:"timing"`                      // 定时器
-	TriggerBuilding *TriggerFloor  `yaml:"trigger_building"`            // 楼层触发器
-	TargetFloor     []float64      `yaml:"target_floor,omitempty"`      // 目标楼层, 盖中此楼将退出盖楼
-	TargetFloorRule map[string]int `yaml:"target_floor_rule,omitempty"` // 带规则匹配目标楼层
+	MaxLimit        int64            `yaml:"max_limit"`         // 接口提示盖楼频繁最大限制次数，达到限制将休眠 x 秒后请求
+	TickerDuration  int64            `yaml:"ticker_duration"`   // 间隔多少毫秒轮询一次
+	Timing          *Timing          `yaml:"timing"`            // 定时器
+	TriggerBuilding *TriggerFloor    `yaml:"trigger_building"`  // 楼层触发器
+	TargetFloor     *TargetFloor     `yaml:"target_floor"`      // 目标楼层, 盖中此楼将退出盖楼
+	TargetFloorRule *TargetFloorRule `yaml:"target_floor_rule"` // 带规则匹配目标楼层
 }
 
 func Init(filename string) *Conf {

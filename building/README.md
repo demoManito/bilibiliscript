@@ -9,9 +9,11 @@
 
 - 功能说明：
   - **支持设置目标楼层**：
+    - 需将 `target_floor.enable` 设置为 true 开启匹配楼层，默认为 false 表示关闭
     - 设置 `target_floor` 盖中目标楼层自动终止盖楼
     - 参数为数组，支持设置多个楼层
   - **支持规则匹配目标楼层**：
+    - 需将 `target_floor_rule.enable` 设置为 true 开启规则匹配楼层，默认为 false 表示关闭
     - 设置 `target_floor_rule`，填写规则(`rule`) 和匹配目标数字(`target`) 即可
       1. 规则1: [rule: 1, target: 2] 表示匹配 2 的倍数
       2. 规则2: [rule: 2, target: 2] 表示匹配楼层数中包含 2 的楼层
