@@ -60,11 +60,27 @@ loop:
 
 func (b *Building) waiter() {
 	switch {
+	case b.Conf.TriggerBuilding.Enable:
+		b.triggerFloor()
 	case b.Conf.Timing.Enable:
 		b.timing()
 	}
 
 	log.Println("🏠 开始盖楼啦～")
+}
+
+func (b *Building) triggerFloor() {
+	log.Printf("正在等待楼层 %d 生成...", b.Conf.TriggerBuilding.Num)
+	ticker := time.NewTicker(time.Second)
+	for {
+		select {
+		case <-ticker.C:
+			if b.triggerBuilding() {
+				ticker.Stop()
+				return
+			}
+		}
+	}
 }
 
 func (b *Building) timing() {

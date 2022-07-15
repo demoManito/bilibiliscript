@@ -15,10 +15,15 @@
     - 设置 `target_floor_rule`，填写规则(`rule`) 和匹配目标数字(`target`) 即可
       1. 规则1: [rule: 1, target: 2] 表示匹配 2 的倍数
       2. 规则2: [rule: 2, target: 2] 表示匹配楼层数中包含 2 的楼层
+  - **支持设置楼层触发器**：
+    - 需将 `trigger_building.enable` 设置为 true 开启触发器，默认为 false 表示关闭
+    - 设置 `num` 为触发的目标楼层，当前最大楼层数 >= `num` 则开始盖楼
+    - 注意：此功能与**定时任务**互斥，同时设置默认只使用**楼层触发器**
   - **支持设置定时任务**：
-    - 需将 `timing.enable` 设置为 true 表示开启，默认为 false 表示关闭
+    - 需将 `timing.enable` 设置为 true 开启定时任务，默认为 false 表示关闭
     - 设置 `timing.start_time`、`timing.end_time` 可定时开始和定时结束（可单独设置 `start_time` 或 `end_time` 两者无关联关系）
     - 日期格式：2022-07-22 23:00:00
+    - 注意：此功能与**楼层触发器**互斥，同时设置默认只使用**楼层触发器**
   - **支持多贴同时盖楼**：
   ```go
     func example() {

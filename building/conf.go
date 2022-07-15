@@ -21,12 +21,20 @@ type Timing struct {
 	EndTime   string `yaml:"end_time"`   // 定时结束时间
 }
 
+// TriggerFloor 楼层触发器
+type TriggerFloor struct {
+	Enable bool   `yaml:"enable"` // 是否开启
+	URL    string `yaml:"url"`    // 评论列表接口
+	Num    int64  `yaml:"num"`    // 触发开始盖楼的楼层数
+}
+
 type Conf struct {
 	utils.ScriptConfig `yaml:",inline"`
 
 	MaxLimit        int64          `yaml:"max_limit"`                   // 接口提示盖楼频繁最大限制次数，达到限制将休眠 x 秒后请求
 	TickerDuration  int64          `yaml:"ticker_duration"`             // 间隔多少毫秒轮询一次
-	Timing          *Timing        `yaml:"timing"`                      // 定时
+	Timing          *Timing        `yaml:"timing"`                      // 定时器
+	TriggerBuilding *TriggerFloor  `yaml:"trigger_building"`            // 楼层触发器
 	TargetFloor     []float64      `yaml:"target_floor,omitempty"`      // 目标楼层, 盖中此楼将退出盖楼
 	TargetFloorRule map[string]int `yaml:"target_floor_rule,omitempty"` // 带规则匹配目标楼层
 }
