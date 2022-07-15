@@ -1,8 +1,8 @@
 # 默认参数
 max_limit: 3 # 接口提示盖楼频繁最大限制次数，达到限制将休眠 x 秒后请求, 默认最大限制 10s 3次
 ticker_duration: 1000 # 单位毫秒, 默认 1 秒请求一次, 小于 1000 进入极速模式适用于短时间抢楼
-url: '' # 盖楼 URL
 # 必选参数
+url: '' # 盖楼 URL
 article_business_id: '' # payload 中获取
 xcsrf: '' # headers 中获取
 cookie: '' # headers 中获取

@@ -76,7 +76,7 @@ func (f *Floor) Report() {
 func (f *Floor) findFloorInfo() *floorInfo {
 	req, err := http.NewRequest(http.MethodGet, f.parseURL(f.pageNum), nil)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("[request err] err: %s", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("X-CSRF", f.Conf.XCSRF)
@@ -85,12 +85,12 @@ func (f *Floor) findFloorInfo() *floorInfo {
 	resp := new(utils.Resp)
 	response, err := new(http.Client).Do(req)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("[http err] http client do err: %s", err)
 	}
 	ioBody, _ := io.ReadAll(response.Body)
 	err = json.Unmarshal(ioBody, &resp)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("[unmarshal err] resp json unmarshal err: %s", err)
 	}
 	if resp.Code != 0 {
 		log.Fatalf("[resp err] code: %d; message: %s; err: %s \n", resp.Code, resp.Message, err)
@@ -99,12 +99,12 @@ func (f *Floor) findFloorInfo() *floorInfo {
 	list := resp.Data["commentReplyList"]
 	jsonList, err := json.Marshal(list)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("[marshal err] comment_reply_list json marshal err: %s", err)
 	}
 	floors := make([]*floorInfo, 0)
 	err = json.Unmarshal(jsonList, &floors)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("[unmarshal err] floors json unmarshal err: %s", err)
 	}
 
 	if floors[len(floors)-1].FloorNum < f.Conf.FloorNum {

@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
 	"io"
 	"log"
 	"math/rand"
@@ -83,7 +82,7 @@ func (b *Building) await() (int64, int64) {
 		return wait, end.Unix()
 	}
 	if end.Unix() < now.Unix() {
-		log.Fatal(errors.New("已结束"))
+		log.Fatal("定时任务已结束")
 	}
 	return 0, end.Unix()
 }
@@ -96,7 +95,7 @@ func (b *Building) building(ctx context.Context) {
 	})
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, b.Conf.URL, bytes.NewReader(body))
 	if err != nil {
-		log.Printf("[http request] err: %s \n", err)
+		log.Printf("[request err] err: %s \n", err)
 		return
 	}
 	req.Header.Set("Content-Type", "application/json")
@@ -106,13 +105,13 @@ func (b *Building) building(ctx context.Context) {
 	resp := new(utils.Resp)
 	response, err := new(http.Client).Do(req)
 	if err != nil {
-		log.Printf("[client do] err: %s \n", err)
+		log.Printf("[http err] client do err: %s \n", err)
 		return
 	}
 	ioBody, _ := io.ReadAll(response.Body)
 	err = json.Unmarshal(ioBody, &resp)
 	if err != nil {
-		log.Printf("[resp json unmarshal] err: %s \n", err)
+		log.Printf("[unmarshal err] resp json unmarshal err: %s \n", err)
 		return
 	}
 	if resp.Code != 0 {
