@@ -40,8 +40,8 @@ func (f *Floor) Report() {
 		}
 	}
 
-	log.Printf("\n楼层信息：\n 楼层号：%d \n 时间：%s \n 昵称：%s \n 姓名：%s",
-		info.FloorNum, info.CommentTime, info.SourceNickname, info.SourceUserAccount)
+	log.Printf("\n楼层信息：\n 页数：%d \n 楼层号：%d \n 时间：%s \n 昵称：%s \n 姓名：%s \n 内容：%s \n",
+		f.pageNum, info.FloorNum, info.CommentTime, info.SourceNickname, info.SourceUserAccount, info.Content)
 }
 
 func (f *Floor) findFloorInfo() *utils.FloorInfo {
@@ -49,9 +49,7 @@ func (f *Floor) findFloorInfo() *utils.FloorInfo {
 	if err != nil {
 		log.Fatalf("[request err] err: %s", err)
 	}
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("X-CSRF", f.Conf.XCSRF)
-	req.Header.Set("Cookie", f.Conf.Cookie)
+	f.Conf.SetReqHeader(req)
 
 	resp := new(utils.Resp)
 	response, err := new(http.Client).Do(req)

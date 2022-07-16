@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"io"
 	"log"
-	"math/rand"
 	"net/http"
 	"strconv"
 	"strings"
@@ -71,13 +70,17 @@ func (b *Building) waiter() {
 	log.Println("🏠 开始盖楼啦～")
 }
 
-func (b *Building) triggerFloor(url string, num int64) {
-	log.Printf("正在等待楼层 %d 生成...", num)
+func (b *Building) triggerFloor(url string, targetFloorNum int64) {
+	log.Printf("正在等待第 %d 层生成...", targetFloorNum)
 	ticker := time.NewTicker(time.Second)
 	for {
 		select {
 		case <-ticker.C:
-			if b.isTriggerBuilding(url, num) {
+			maxFloorNum, err := b.Conf.BaseConfig.MaxFloorNum(url)
+			if err != nil {
+				continue
+			}
+			if targetFloorNum <= maxFloorNum {
 				ticker.Stop()
 				return
 			}
@@ -107,16 +110,15 @@ func (b *Building) building(ctx context.Context) {
 	body, _ := json.Marshal(map[string]interface{}{
 		"articleBusinessId": b.Conf.ArticleBusinessID,
 		"atUserList":        make([]interface{}, 0, 0),
-		"content":           rand.Int31n(10), // 留言
+		// TODO: "content": rand.Int31n(10)
+		"content": "1", // 留言
 	})
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, b.Conf.URL, bytes.NewReader(body))
 	if err != nil {
 		log.Printf("[request err] err: %s \n", err)
 		return
 	}
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("X-CSRF", b.Conf.XCSRF)
-	req.Header.Set("Cookie", b.Conf.Cookie)
+	b.Conf.SetReqHeader(req)
 
 	resp := new(utils.Resp)
 	response, err := new(http.Client).Do(req)

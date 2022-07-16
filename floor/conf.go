@@ -10,7 +10,7 @@ import (
 )
 
 type Conf struct {
-	utils.ScriptConfig `yaml:",inline"`
+	utils.BaseConfig `yaml:",inline"`
 
 	FloorNum int64 `yaml:"floor_num"`
 }

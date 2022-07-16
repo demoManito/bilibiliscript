@@ -1,4 +1,4 @@
-package building
+package utils
 
 import (
 	"encoding/json"
@@ -6,64 +6,74 @@ import (
 	"log"
 	"net/http"
 	"net/url"
-
-	"github.com/demoManito/bilibiliscript/utils"
 )
 
+// BaseConfig 基础配置字段
+type BaseConfig struct {
+	URL               string `yaml:"url"` // 对应接口
+	ArticleBusinessID string `yaml:"article_business_id"`
+	XCSRF             string `yaml:"xcsrf"`
+	Cookie            string `yaml:"cookie"`
+}
+
+func (bc *BaseConfig) SetReqHeader(req *http.Request) {
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("X-CSRF", bc.XCSRF)
+	req.Header.Set("Cookie", bc.Cookie)
+}
+
 // isTriggerBuilding 是否触发盖楼
-func (b *Building) isTriggerBuilding(url string, floorNum int64) bool {
-	req, err := http.NewRequest(http.MethodGet, b.parseURL(url), nil)
+func (bc *BaseConfig) MaxFloorNum(url string) (int64, error) {
+	req, err := http.NewRequest(http.MethodGet, bc.parseURL(url), nil)
 	if err != nil {
 		log.Printf("[request err] err: %s", err)
-		return false
+		return 0, err
 	}
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("X-CSRF", b.Conf.XCSRF)
-	req.Header.Set("Cookie", b.Conf.Cookie)
+	bc.SetReqHeader(req)
 
-	resp := new(utils.Resp)
+	resp := new(Resp)
 	response, err := new(http.Client).Do(req)
 	if err != nil {
 		log.Printf("[http err] http client do err: %s", err)
-		return false
+		return 0, err
 	}
 	ioBody, _ := io.ReadAll(response.Body)
 	err = json.Unmarshal(ioBody, &resp)
 	if err != nil {
 		log.Printf("[unmarshal err] resp json unmarshal err: %s", err)
-		return false
+		return 0, err
 	}
 	if resp.Code != 0 {
 		log.Printf("[resp err] code: %d; message: %s; err: %s \n", resp.Code, resp.Message, err)
-		return false
+		return 0, err
 	}
 
 	list := resp.Data["commentReplyList"]
 	jsonList, err := json.Marshal(list)
 	if err != nil {
 		log.Printf("[marshal err] comment_reply_list json marshal err: %s", err)
-		return false
+		return 0, err
 	}
-	floors := make([]*utils.FloorInfo, 0)
+	floors := make([]FloorInfo, 0)
 	err = json.Unmarshal(jsonList, &floors)
 	if err != nil {
 		log.Printf("[unmarshal err] floors json unmarshal err: %s", err)
-		return false
+		return 0, err
 	}
 
-	if floorNum <= floors[0].FloorNum {
-		return true
+	if len(floors) <= 0 {
+		return 0, nil
 	}
-	return false
+	return floors[0].FloorNum, nil
 }
 
-func (b *Building) parseURL(u string) string {
+func (bc *BaseConfig) parseURL(u string) string {
 	up, err := url.Parse(u)
 	if err != nil {
 		log.Fatal(err)
 	}
 	q := up.Query()
-	q.Set("articleBusinessId", b.Conf.ArticleBusinessID)
+	q.Set("articleBusinessId", bc.ArticleBusinessID)
 	q.Set("pageSize", "10")
 	q.Set("pageNum", "1")
 	q.Set("order", "1")

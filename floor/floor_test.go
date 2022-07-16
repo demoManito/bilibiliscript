@@ -9,7 +9,7 @@ import (
 func TestFloor_ParseURL(t *testing.T) {
 	f := &Floor{
 		Conf: &Conf{
-			ScriptConfig: utils.ScriptConfig{
+			BaseConfig: utils.BaseConfig{
 				URL:               "https://localhost:8080/test",
 				ArticleBusinessID: "aaaaa",
 			},

@@ -50,10 +50,11 @@ type TargetFloorScope struct {
 }
 
 type Conf struct {
-	utils.ScriptConfig `yaml:",inline"`
+	utils.BaseConfig `yaml:",inline"`
 
-	MaxLimit         int64             `yaml:"max_limit"`          // 接口提示盖楼频繁最大限制次数，达到限制将休眠 x 秒后请求
-	TickerDuration   int64             `yaml:"ticker_duration"`    // 间隔多少毫秒轮询一次
+	MaxLimit       int64 `yaml:"max_limit"`       // 接口提示盖楼频繁最大限制次数，达到限制将休眠 x 秒后请求
+	TickerDuration int64 `yaml:"ticker_duration"` // 间隔多少毫秒轮询一次
+
 	Timing           *Timing           `yaml:"timing"`             // 定时器
 	TriggerBuilding  *TriggerFloor     `yaml:"trigger_building"`   // 楼层触发器
 	TargetFloor      *TargetFloor      `yaml:"target_floor"`       // 盖中指定目标楼层
