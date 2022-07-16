@@ -3,7 +3,7 @@ max_limit: 2 # 接口提示盖楼频繁最大限制次数，达到限制将休�
 ticker_duration: 2000 # 单位毫秒, 默认 1 秒请求一次, 小于 1000 进入极速模式适用于短时间抢楼
 
 # 必填参数
-url: 'https://${domain}/api/planet/comment/publish' # 盖楼接口 URL
+url: 'https://bbplanet.bilibili.co/api/planet/comment/publish' # 盖楼接口 URL
 article_business_id: '' # payload 中获取
 xcsrf: '' # headers 中获取
 cookie: '' # headers 中获取
@@ -15,7 +15,7 @@ timing: # 定时器
   end_time: '' # 盖楼结束时间 '2022-07-22 23:00:00', 与 start_time 没有依赖关系可单独设置
 trigger_building: # 盖楼触发器
   enable: false # 是否开启触发器, 默认关闭
-  url: 'https://${domain}/api/planet/comment/commentList' # 评论列表接口 URL
+  url: 'https://bbplanet.bilibili.co/api/planet/comment/commentList' # 评论列表接口 URL
   num: 0 # 触发盖楼的楼层数, MAX(楼层数) >= n 时开始盖楼
 target_floor: # 盖中指定楼层
   enable: false
@@ -26,6 +26,6 @@ target_floor_rule: # 盖中规则匹配上的目标楼层
   target: 2 # 目标数字, 如 rule 指定 1, 表示所有 2 的倍数都选座目标楼层
 target_floor_scope: # 盖中目标楼层返回
   enable: false
-  url: 'https://${domain}/api/planet/comment/commentList' # 评论列表接口 URL
+  url: 'https://bbplanet.bilibili.co/api/planet/comment/commentList' # 评论列表接口 URL
   min: 0
   max: 0

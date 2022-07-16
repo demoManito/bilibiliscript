@@ -8,7 +8,7 @@ func TestBaseConfig_MaxFloorNum(t *testing.T) {
 		XCSRF:             "",
 		Cookie:            "",
 	}
-	num, err := bc.MaxFloorNum("https://${domain}/api/planet/comment/commentList")
+	num, err := bc.MaxFloorNum("https://bbplanet.bilibili.co/api/planet/comment/commentList")
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -1,5 +1,5 @@
 floor_num: 1000 # 需要查看的楼层数据
-url: 'https://${domain}/api/planet/comment/commentList' # 评论列表接口 URL
+url: 'https://bbplanet.bilibili.co/api/planet/comment/commentList' # 评论列表接口 URL
 article_business_id: '' # payload 中获取
 xcsrf: '' # headers 中获取
 cookie: '' # headers 中获取
