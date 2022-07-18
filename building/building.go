@@ -69,7 +69,7 @@ func (b *Building) waiter() {
 	}
 
 	if b.Conf.SMSServer.Enable {
-		b.Conf.SMSServer.IMSM.GoSendMsg(server.ServerSMSCodeBuilding)
+		IMSM.GoSendMsg(server.ServerSMSCodeBuilding)
 	}
 	log.Println("🏠 开始盖楼啦～")
 }

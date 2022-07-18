@@ -16,6 +16,8 @@ const (
 	targetFloorRuleInclude            // 包含某个数
 )
 
+var IMSM server.IMSM
+
 // Timing 定时相关
 type Timing struct {
 	Enable    bool   `yaml:"enable"`     // 是否开启
@@ -61,8 +63,6 @@ type SMSServer struct {
 	Mode   string           `yaml:"mode"`
 	Mobile string           `yaml:"mobile"`
 	Aliyun *AliyunSMSServer `yaml:"aliyun"`
-
-	server.IMSM
 }
 
 type Conf struct {
@@ -100,7 +100,7 @@ func (c *Conf) InitSMS() {
 	var err error
 	switch c.SMSServer.Mode {
 	case "aliyun":
-		c.SMSServer.IMSM, err =
+		IMSM, err =
 			aliyun.NewSendMsg(c.SMSServer.Mobile, c.SMSServer.Aliyun.AccessKeyID, c.SMSServer.Aliyun.AccessKeySecret)
 		if err != nil {
 			log.Fatal(err)
