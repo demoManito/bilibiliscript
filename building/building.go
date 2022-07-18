@@ -58,14 +58,30 @@ loop:
 }
 
 func (b *Building) waiter() {
-	switch {
-	case b.Conf.TriggerBuilding.Enable:
-		b.triggerFloor(b.Conf.TriggerBuilding.URL, b.Conf.TriggerBuilding.Num)
-	case b.Conf.TargetFloorScope.Enable:
-		b.triggerFloor(b.Conf.TargetFloorScope.URL, b.Conf.TargetFloorScope.MIN)
-	case b.Conf.Timing.Enable:
-		b.timing()
+	if !(b.Conf.TriggerBuilding.Enable || b.Conf.TargetFloorScope.Enable || b.Conf.Timing.Enable) {
+		return
 	}
+
+	runwg := make(chan struct{}, 0)
+	if b.Conf.TriggerBuilding.Enable {
+		go func() {
+			b.triggerFloor(b.Conf.TriggerBuilding.URL, b.Conf.TriggerBuilding.Num)
+			runwg <- struct{}{}
+		}()
+	}
+	if b.Conf.TargetFloorScope.Enable {
+		go func() {
+			b.triggerFloor(b.Conf.TargetFloorScope.URL, b.Conf.TargetFloorScope.MIN)
+			runwg <- struct{}{}
+		}()
+	}
+	if b.Conf.Timing.Enable {
+		go func() {
+			b.timing()
+			runwg <- struct{}{}
+		}()
+	}
+	<-runwg
 
 	log.Println("🏠 开始盖楼啦～")
 }
