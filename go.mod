@@ -4,7 +4,6 @@ go 1.17
 
 require (
 	github.com/progrium/macdriver v0.2.0
-	github.com/progrium/watcher v1.0.7
 	github.com/stretchr/testify v1.8.0
 	gopkg.in/yaml.v2 v2.4.0
 )
