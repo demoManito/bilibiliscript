@@ -5,6 +5,17 @@
 1. [盖楼 README.md](https://github.com/demoManito/bilibiliscript/tree/master/building)
 2. [楼层信息 README.md](https://github.com/demoManito/bilibiliscript/tree/master/floor)
 
+### 支持短信提醒服务
+- [阿里云短信服务](https://www.aliyun.com/)
+```go
+func example() {
+    sm, _ := aliyun.NewSendMsg(mobile, accessKeyId, accessKeySecret string)
+    err := sm.SendMsg(msg string)
+    if err != nil {
+    	t.Fatal(err)
+    }
+}
+```
 ### 申明
 本项目仅供学习参考
 

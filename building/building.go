@@ -13,6 +13,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/demoManito/bilibiliscript/server"
 	"github.com/demoManito/bilibiliscript/utils"
 )
 
@@ -67,6 +68,9 @@ func (b *Building) waiter() {
 		b.timing()
 	}
 
+	if b.Conf.SMSServer.Enable {
+		b.Conf.SMSServer.IMSM.GoSendMsg(server.ServerSMSCodeBuilding)
+	}
 	log.Println("🏠 开始盖楼啦～")
 }
 

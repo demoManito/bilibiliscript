@@ -29,3 +29,10 @@ target_floor_scope: # 盖中目标楼层返回
   url: 'https://${domain}/api/planet/comment/commentList' # 评论列表接口 URL
   min: 0
   max: 0
+sms_server:
+  enable: false
+  mode: 'aliyun'
+  mobile: ''
+  aliyun:
+    access_key_id: ''
+    access_key_secret: ''

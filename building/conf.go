@@ -6,6 +6,8 @@ import (
 
 	"gopkg.in/yaml.v2"
 
+	"github.com/demoManito/bilibiliscript/server"
+	"github.com/demoManito/bilibiliscript/server/aliyun"
 	"github.com/demoManito/bilibiliscript/utils"
 )
 
@@ -49,6 +51,20 @@ type TargetFloorScope struct {
 	MAX    int64  `yaml:"max"`
 }
 
+type AliyunSMSServer struct {
+	AccessKeyID     string `yaml:"access_key_id"`
+	AccessKeySecret string `yaml:"access_key_secret"`
+}
+
+type SMSServer struct {
+	Enable bool             `yaml:"enable"`
+	Mode   string           `yaml:"mode"`
+	Mobile string           `yaml:"mobile"`
+	Aliyun *AliyunSMSServer `yaml:"aliyun"`
+
+	server.IMSM
+}
+
 type Conf struct {
 	utils.BaseConfig `yaml:",inline"`
 
@@ -60,6 +76,7 @@ type Conf struct {
 	TargetFloor      *TargetFloor      `yaml:"target_floor"`       // 盖中指定目标楼层
 	TargetFloorRule  *TargetFloorRule  `yaml:"target_floor_rule"`  // 盖中规则匹配上的目标楼层
 	TargetFloorScope *TargetFloorScope `yaml:"target_floor_scope"` // 盖中目标楼层返回
+	SMSServer        *SMSServer        `yaml:"sms_server"`         // 短信提醒服务
 }
 
 func Init(filename string) *Conf {
@@ -72,5 +89,23 @@ func Init(filename string) *Conf {
 	if err != nil {
 		log.Fatal(err)
 	}
+	conf.InitSMS()
 	return conf
+}
+
+func (c *Conf) InitSMS() {
+	if !c.SMSServer.Enable {
+		return
+	}
+	var err error
+	switch c.SMSServer.Mode {
+	case "aliyun":
+		c.SMSServer.IMSM, err =
+			aliyun.NewSendMsg(c.SMSServer.Mobile, c.SMSServer.Aliyun.AccessKeyID, c.SMSServer.Aliyun.AccessKeySecret)
+		if err != nil {
+			log.Fatal(err)
+		}
+	default:
+		panic("sms_notification.mode unknown")
+	}
 }
