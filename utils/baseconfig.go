@@ -18,8 +18,24 @@ type BaseConfig struct {
 
 func (bc *BaseConfig) SetReqHeader(req *http.Request) {
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Accept-Encoding", "gzip, deflate, br")
+	req.Header.Set("Accept-Language", "zh-CN,zh;q=0.9")
+	req.Header.Set("Cache-Control", "no-cache")
+	req.Header.Set("Connection", "keep-alive")
 	req.Header.Set("X-CSRF", bc.XCSRF)
+	req.Header.Set("Host", "bbplanet.bilibili.co")
+	req.Header.Set("Pragma", "no-cache")
+	req.Header.Set("Referer", "https://bbplanet.bilibili.co/pc/")
+	req.Header.Set("sec-ch-ua", "\".Not/A)Brand\";v=\"99\", \"Google Chrome\";v=\"103\", \"Chromium\";v=\"103\"")
+	req.Header.Set("sec-ch-ua-platform", "macOS")
+	req.Header.Set("Sec-Fetch-Dest", "empty")
+	req.Header.Set("Sec-Fetch-Mode", "cors")
+	req.Header.Set("Sec-Fetch-Site", "same-origin")
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36")
+	req.Header.Set("X-AppKey", "ops.teamwork.portal")
 	req.Header.Set("Cookie", bc.Cookie)
+	req.Header.Set("X-Requested-With", "XMLHttpRequest")
+	req.Header.Set("X-UserType", "1")
 }
 
 // isTriggerBuilding 是否触发盖楼
