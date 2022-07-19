@@ -3,8 +3,8 @@
 - 使用注意 ⚠️：
   - 使用的时候收敛一点，别太激进～
   - 设置 `X-CSRF`、`Cookie` 参数从请求头中获取
-  - 设置 `Payload` 参数从中获取请求体
-  - 以上参数均在 `config.yml` 中设置
+  - 设置 `articleBusinessId` 参数从 `Payload` 中获取请求体
+  - 以上参数均在 `config.example.yml` 中设置
 
 
 - 功能说明：<u>可支持同时设置多个触发条件，任意条件满足即可触发盖楼</u>
