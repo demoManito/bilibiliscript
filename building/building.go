@@ -26,6 +26,20 @@ type Building struct {
 }
 
 func New(fileName string) *Building {
+	if fileName == "" {
+		return &Building{
+			Conf: &Conf{
+				Timing:           new(Timing),
+				TriggerBuilding:  new(TriggerBuilding),
+				TargetFloor:      new(TargetFloor),
+				TargetFloorRule:  new(TargetFloorRule),
+				TargetFloorScope: new(TargetFloorScope),
+			},
+			counter: 0,
+			done:    make(chan struct{}, 0),
+			ctx:     context.Background(),
+		}
+	}
 	return &Building{
 		Conf:    Init(fileName),
 		counter: 0,

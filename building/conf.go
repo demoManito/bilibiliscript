@@ -21,8 +21,8 @@ type Timing struct {
 	EndTime   string `yaml:"end_time"`   // 定时结束时间
 }
 
-// TriggerFloor 楼层触发器
-type TriggerFloor struct {
+// TriggerBuilding 楼层触发器
+type TriggerBuilding struct {
 	Enable bool   `yaml:"enable"` // 是否开启
 	URL    string `yaml:"url"`    // 评论列表接口
 	Num    int64  `yaml:"num"`    // 触发开始盖楼的楼层数
@@ -56,7 +56,7 @@ type Conf struct {
 	TickerDuration int64 `yaml:"ticker_duration"` // 间隔多少毫秒轮询一次
 
 	Timing           *Timing           `yaml:"timing"`             // 定时器
-	TriggerBuilding  *TriggerFloor     `yaml:"trigger_building"`   // 楼层触发器
+	TriggerBuilding  *TriggerBuilding  `yaml:"trigger_building"`   // 楼层触发器
 	TargetFloor      *TargetFloor      `yaml:"target_floor"`       // 盖中指定目标楼层
 	TargetFloorRule  *TargetFloorRule  `yaml:"target_floor_rule"`  // 盖中规则匹配上的目标楼层
 	TargetFloorScope *TargetFloorScope `yaml:"target_floor_scope"` // 盖中目标楼层返回
