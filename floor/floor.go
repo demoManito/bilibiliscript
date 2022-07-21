@@ -26,6 +26,14 @@ func New(fileName string) *Floor {
 	return f
 }
 
+func NewByFloorNum(floorNum int64) *Floor {
+	f := &Floor{
+		Conf: &Conf{FloorNum: floorNum},
+	}
+	f.pageNum = int(f.Conf.FloorNum / 10)
+	return f
+}
+
 func (f *Floor) Report() {
 	var info *utils.FloorInfo
 	for {
