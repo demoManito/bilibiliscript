@@ -19,6 +19,12 @@ type Floor struct {
 }
 
 func New(fileName string) *Floor {
+	if fileName == "" {
+		return &Floor{
+			Conf: &Conf{},
+		}
+	}
+
 	f := &Floor{
 		Conf: Init(fileName),
 	}
@@ -26,12 +32,9 @@ func New(fileName string) *Floor {
 	return f
 }
 
-func NewByFloorNum(floorNum int64) *Floor {
-	f := &Floor{
-		Conf: &Conf{FloorNum: floorNum},
-	}
+func (f *Floor) SetPageNum(floorNum int64) {
+	f.Conf.FloorNum = floorNum
 	f.pageNum = int(f.Conf.FloorNum / 10)
-	return f
 }
 
 func (f *Floor) Report() {
