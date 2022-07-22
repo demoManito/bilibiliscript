@@ -38,7 +38,7 @@ func (bc *BaseConfig) SetReqHeader(req *http.Request) {
 	req.Header.Set("X-UserType", "1")
 }
 
-// isTriggerBuilding 是否触发盖楼
+// MaxFloorNum 当前最大楼层
 func (bc *BaseConfig) MaxFloorNum(url string) (int64, error) {
 	req, err := http.NewRequest(http.MethodGet, bc.parseURL(url), nil)
 	if err != nil {
