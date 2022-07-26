@@ -1,12 +1,14 @@
 package floor
 
 import (
+	"compress/gzip"
 	"encoding/json"
 	"io"
 	"log"
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 
 	"github.com/demoManito/bilibiliscript/utils"
 )
@@ -67,7 +69,7 @@ func (f *Floor) findFloorInfo() *utils.FloorInfo {
 	if err != nil {
 		log.Fatalf("[http err] http client do err: %s", err)
 	}
-	ioBody, _ := io.ReadAll(response.Body)
+	ioBody, _ := io.ReadAll(f.EncodingBody(response))
 	err = json.Unmarshal(ioBody, &resp)
 	if err != nil {
 		log.Fatalf("[unmarshal err] resp json unmarshal err: %s", err)
@@ -118,4 +120,24 @@ func (f *Floor) parseURL(pageNum int) string {
 	q.Set("scrollId", "null")
 	up.RawQuery = q.Encode()
 	return up.String()
+}
+
+// EncodingBody 相应头新增 content-encoding, 需要使用 gzip 解压缩响应体
+func (f *Floor) EncodingBody(response *http.Response) io.ReadCloser {
+	var flag bool
+	for k, v := range response.Header {
+		if strings.ToLower(k) == "content-encoding" && strings.ToLower(v[0]) == "gzip" {
+			flag = true
+			break
+		}
+	}
+	if flag {
+		gr, err := gzip.NewReader(response.Body)
+		defer gr.Close()
+		if err != nil {
+			log.Fatalf("[content encoding] err: %s", err)
+		}
+		return gr
+	}
+	return response.Body
 }
