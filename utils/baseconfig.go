@@ -53,7 +53,7 @@ func (bc *BaseConfig) MaxFloorNum(url string) (int64, error) {
 		log.Printf("[http err] http client do err: %s", err)
 		return 0, err
 	}
-	ioBody, _ := io.ReadAll(response.Body)
+	ioBody, _ := io.ReadAll(EncodingBody(response))
 	err = json.Unmarshal(ioBody, &resp)
 	if err != nil {
 		log.Printf("[unmarshal err] resp json unmarshal err: %s", err)

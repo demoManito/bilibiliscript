@@ -1,5 +1,13 @@
 package utils
 
+import (
+	"compress/gzip"
+	"io"
+	"log"
+	"net/http"
+	"strings"
+)
+
 // Resp response
 type Resp struct {
 	Code    int64                  `json:"code"`
@@ -35,4 +43,24 @@ type FloorInfo struct {
 	SourceNickname       string        `json:"sourceNickname"`    // 昵称
 	SourceUserAccount    string        `json:"sourceUserAccount"` // 姓名拼音
 	SourceWorkCode       string        `json:"sourceWorkCode"`
+}
+
+// EncodingBody 相应头新增 content-encoding, 需要使用 gzip 解压缩响应体
+func EncodingBody(response *http.Response) io.ReadCloser {
+	var flag bool
+	for k, v := range response.Header {
+		if strings.ToLower(k) == "content-encoding" && strings.ToLower(v[0]) == "gzip" {
+			flag = true
+			break
+		}
+	}
+	if flag {
+		gr, err := gzip.NewReader(response.Body)
+		defer gr.Close()
+		if err != nil {
+			log.Fatalf("[content encoding] err: %s", err)
+		}
+		return gr
+	}
+	return response.Body
 }

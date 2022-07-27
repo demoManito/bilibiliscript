@@ -1,14 +1,12 @@
 package floor
 
 import (
-	"compress/gzip"
 	"encoding/json"
 	"io"
 	"log"
 	"net/http"
 	"net/url"
 	"strconv"
-	"strings"
 
 	"github.com/demoManito/bilibiliscript/utils"
 )
@@ -69,7 +67,7 @@ func (f *Floor) findFloorInfo() *utils.FloorInfo {
 	if err != nil {
 		log.Fatalf("[http err] http client do err: %s", err)
 	}
-	ioBody, _ := io.ReadAll(f.EncodingBody(response))
+	ioBody, _ := io.ReadAll(utils.EncodingBody(response))
 	err = json.Unmarshal(ioBody, &resp)
 	if err != nil {
 		log.Fatalf("[unmarshal err] resp json unmarshal err: %s", err)
@@ -89,22 +87,24 @@ func (f *Floor) findFloorInfo() *utils.FloorInfo {
 		log.Fatalf("[unmarshal err] floors json unmarshal err: %s", err)
 	}
 
-	if floors[len(floors)-1].FloorNum < f.Conf.FloorNum {
-		f.pageNum = f.pageNum + 1
-		return nil
-	}
-	if floors[0].FloorNum > f.Conf.FloorNum {
+	switch {
+	case len(floors) == 0:
 		f.pageNum = f.pageNum - 1
-		return nil
-	}
-	var floor *utils.FloorInfo
-	for _, fls := range floors {
-		if fls.FloorNum == f.Conf.FloorNum {
-			floor = fls
-			break
+	case floors[len(floors)-1].FloorNum < f.Conf.FloorNum:
+		f.pageNum = f.pageNum + 1
+	case floors[0].FloorNum > f.Conf.FloorNum:
+		f.pageNum = f.pageNum - 1
+	default:
+		var floor *utils.FloorInfo
+		for _, fls := range floors {
+			if fls.FloorNum == f.Conf.FloorNum {
+				floor = fls
+				break
+			}
 		}
+		return floor
 	}
-	return floor
+	return nil
 }
 
 func (f *Floor) parseURL(pageNum int) string {
@@ -120,24 +120,4 @@ func (f *Floor) parseURL(pageNum int) string {
 	q.Set("scrollId", "null")
 	up.RawQuery = q.Encode()
 	return up.String()
-}
-
-// EncodingBody 相应头新增 content-encoding, 需要使用 gzip 解压缩响应体
-func (f *Floor) EncodingBody(response *http.Response) io.ReadCloser {
-	var flag bool
-	for k, v := range response.Header {
-		if strings.ToLower(k) == "content-encoding" && strings.ToLower(v[0]) == "gzip" {
-			flag = true
-			break
-		}
-	}
-	if flag {
-		gr, err := gzip.NewReader(response.Body)
-		defer gr.Close()
-		if err != nil {
-			log.Fatalf("[content encoding] err: %s", err)
-		}
-		return gr
-	}
-	return response.Body
 }
