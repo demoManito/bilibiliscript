@@ -1,5 +1,5 @@
 ## 福利
-> ⚠️ 由于同事吧接口涉及敏感词（bi****li），不能出现在 `master` 分支，如需包含接口的配置文件请切换到 `private` 分支
+> ⚠️ 同事吧盖楼相关
 
 ### 功能介绍
 1. [盖楼 README.md](https://github.com/demoManito/bilibiliscript/tree/master/building)
