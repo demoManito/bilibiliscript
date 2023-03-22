@@ -1,8 +1,8 @@
 package floor
 
 import (
-	"io/ioutil"
 	"log"
+	"os"
 
 	"gopkg.in/yaml.v2"
 
@@ -16,7 +16,7 @@ type Conf struct {
 }
 
 func Init(filename string) *Conf {
-	file, err := ioutil.ReadFile(filename)
+	file, err := os.ReadFile(filename)
 	if err != nil {
 		log.Fatal(err)
 	}
