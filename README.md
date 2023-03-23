@@ -1,5 +1,4 @@
-## 福利
-> ⚠️ 同事吧盖楼薅羊毛
+> ⚠️ 同事吧盖楼脚本
 
 ### 功能介绍
 1. [盖楼 README.md](https://github.com/demoManito/bilibiliscript/tree/master/building)
